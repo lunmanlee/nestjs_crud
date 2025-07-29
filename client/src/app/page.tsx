@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -26,6 +27,8 @@ export default function HomePage() {
     published: false,
   });
   const [formErrors, setFormErrors] = useState<{[key: string]: string}>({});
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [postToDelete, setPostToDelete] = useState<Post | null>(null);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -84,12 +87,21 @@ export default function HomePage() {
     }
   };
 
-  const handleDeletePost = async (id: number) => {
-    const result = await apiClient.deletePost(id);
+  const openDeleteDialog = (post: Post) => {
+    setPostToDelete(post);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDeletePost = async () => {
+    if (!postToDelete) return;
+    
+    const result = await apiClient.deletePost(postToDelete.id);
     
     if (result.data) {
-      setPosts(posts.filter(post => post.id !== id));
+      setPosts(posts.filter(post => post.id !== postToDelete.id));
       setError(null);
+      setIsDeleteDialogOpen(false);
+      setPostToDelete(null);
     } else {
       setError(result.error || 'Failed to delete post');
     }
@@ -246,7 +258,7 @@ export default function HomePage() {
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => handleDeletePost(post.id)}
+                            onClick={() => openDeleteDialog(post)}
                             className="text-red-600 hover:bg-red-50"
                           >
                             <Trash2 size={14} />
@@ -316,6 +328,27 @@ export default function HomePage() {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Post</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete "{postToDelete?.title}"? This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeletePost}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );
