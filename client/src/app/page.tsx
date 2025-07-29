@@ -46,8 +46,6 @@ export default function HomePage() {
     
     if (!formData.title.trim()) {
       errors.title = 'Title is required';
-    } else if (formData.title.trim().length < 3) {
-      errors.title = 'Title must be at least 3 characters';
     }
     
     setFormErrors(errors);
