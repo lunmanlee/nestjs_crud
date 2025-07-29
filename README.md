@@ -44,7 +44,7 @@ This project showcases a web development stack with two separate applications:
 - Custom DTOs with class-validator
 - API client with full type safety
 
-### ✅ Testing (TDD approach)
+### Testing (TDD approach)
 - Unit tests for service layer
 - end to end tests with Cypress
 
@@ -70,7 +70,7 @@ This project showcases a web development stack with two separate applications:
 1. **Clone the repository**
 ```bash
 git clone <repository-url>
-cd nest_crud
+cd nestjs_crud
 ```
 
 2. **Setup Backend**
