@@ -48,16 +48,21 @@ This project showcases a web development stack with two separate applications:
 - Unit tests for service layer
 - end to end tests with Cypress
 
-## Development patterns & conventions I strive for
+## As a dev these are the development patterns & conventions I strive for
 
 - **Separation of concerns**: Clear frontend/backend separation
-- **Modular architecture**: Feature-based folder structure
-- **Type-safe API**: Shared types and validation
-- **Clean abstractions**: Reusable components and services
-- **TypeScript everywhere**: Full type safety
-- **Consistent naming**: camelCase for variables, PascalCase for components
-- **Error handling**: Comprehensive error states
+- **Modular architecture**: Feature based folder structure
+- **Type safe API**: Shared types and validation
+- **Clean abstractions**: Reusable components and services, Don't Repeat Yourself etc.
+- **Test Driven Development**
+- **Test Coverage**: Unit tests + e2e tests
+- **TypeScript**: Full type safety
+- **Consistent naming**
+- **Error handling**: Comprehensive error states with helpful messages
 - **Validation**: Multiple validation layers (UI, API, Database)
+- **Responsive design**: Mobile first approach
+
+Code quality and readability are some of my core values as a dev.
 
 ## Getting Started
 
