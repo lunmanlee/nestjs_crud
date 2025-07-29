@@ -25,6 +25,7 @@ export default function HomePage() {
     content: '',
     published: false,
   });
+  const [formErrors, setFormErrors] = useState<{[key: string]: string}>({});
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -40,7 +41,21 @@ export default function HomePage() {
     fetchPosts();
   }, []);
 
+  const validateForm = () => {
+    const errors: {[key: string]: string} = {};
+    
+    if (!formData.title.trim()) {
+      errors.title = 'Title is required';
+    } else if (formData.title.trim().length < 3) {
+      errors.title = 'Title must be at least 3 characters';
+    }
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleCreatePost = async () => {
+    if (!validateForm()) return;
     const result = await apiClient.createPost(formData);
     
     if (result.data) {
@@ -55,6 +70,7 @@ export default function HomePage() {
 
   const handleUpdatePost = async () => {
     if (!editingPost) return;
+    if (!validateForm()) return;
     
     const result = await apiClient.updatePost(editingPost.id, formData);
     
@@ -95,6 +111,7 @@ export default function HomePage() {
     setFormData({ title: '', content: '', published: false });
     setEditingPost(null);
     setError(null);
+    setFormErrors({});
   };
 
   return (
@@ -108,7 +125,7 @@ export default function HomePage() {
               </CardTitle>
               <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button onClick={resetForm} className="flex items-center gap-2">
+                  <Button onClick={resetForm} className="flex items-center gap-2" data-testid="create-post-btn">
                     <Plus size={16} />
                     Create Post
                   </Button>
@@ -119,16 +136,28 @@ export default function HomePage() {
                   </DialogHeader>
                   <div className="space-y-4 py-4">
                     <div>
-                      <Label htmlFor="title">Title</Label>
+                      <Label htmlFor="title" className="mb-2">
+                        Title<span className="text-red-500">*</span>
+                      </Label>
                       <Input
                         id="title"
+                        data-testid="title-input"
                         value={formData.title}
-                        onChange={(e) => setFormData({...formData, title: e.target.value})}
+                        onChange={(e) => {
+                          setFormData({...formData, title: e.target.value});
+                          if (formErrors.title) {
+                            setFormErrors({...formErrors, title: ''});
+                          }
+                        }}
                         placeholder="Enter post title"
+                        className={formErrors.title ? 'border-red-500 focus:border-red-500' : ''}
                       />
+                      {formErrors.title && (
+                        <p className="text-red-500 text-sm mt-1">{formErrors.title}</p>
+                      )}
                     </div>
                     <div>
-                      <Label htmlFor="content">Content</Label>
+                      <Label htmlFor="content" className="mb-2">Content</Label>
                       <Textarea
                         id="content"
                         value={formData.content}
@@ -150,7 +179,7 @@ export default function HomePage() {
                       <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
                         Cancel
                       </Button>
-                      <Button onClick={handleCreatePost}>
+                      <Button onClick={handleCreatePost} data-testid="submit-create-btn">
                         Create Post
                       </Button>
                     </div>
@@ -242,15 +271,26 @@ export default function HomePage() {
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div>
-                <Label htmlFor="edit-title">Title</Label>
+                <Label htmlFor="edit-title" className="mb-2">
+                  Title<span className="text-red-500">*</span>
+                </Label>
                 <Input
                   id="edit-title"
                   value={formData.title}
-                  onChange={(e) => setFormData({...formData, title: e.target.value})}
+                  onChange={(e) => {
+                    setFormData({...formData, title: e.target.value});
+                    if (formErrors.title) {
+                      setFormErrors({...formErrors, title: ''});
+                    }
+                  }}
+                  className={formErrors.title ? 'border-red-500 focus:border-red-500' : ''}
                 />
+                {formErrors.title && (
+                  <p className="text-red-500 text-sm mt-1">{formErrors.title}</p>
+                )}
               </div>
               <div>
-                <Label htmlFor="edit-content">Content</Label>
+                <Label htmlFor="edit-content" className="mb-2">Content</Label>
                 <Textarea
                   id="edit-content"
                   value={formData.content}
